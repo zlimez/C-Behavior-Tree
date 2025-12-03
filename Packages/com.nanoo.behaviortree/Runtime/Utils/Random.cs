@@ -29,6 +29,7 @@ namespace Utils
             public int CompareTo(WeightedItem other) => other.Key.CompareTo(Key);
         }
 
+        // Reference: https://en.wikipedia.org/wiki/Reservoir_sampling
         public static void WeightedShuffle(List<float> weights, ref int[] order)
         {
             var count = weights.Count;

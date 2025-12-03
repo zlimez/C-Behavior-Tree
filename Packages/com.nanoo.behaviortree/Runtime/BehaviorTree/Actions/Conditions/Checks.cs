@@ -1,6 +1,6 @@
 using System;
 
-namespace BehaviorTree.Actions
+namespace AI.BehaviorTree
 {
     public class CheckVars : Action
     {

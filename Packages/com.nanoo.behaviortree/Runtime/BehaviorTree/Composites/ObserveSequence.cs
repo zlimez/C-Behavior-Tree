@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Assertions;
 
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class ObserveSequence : Sequence
     {

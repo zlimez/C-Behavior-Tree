@@ -1,6 +1,6 @@
 using UnityEngine.Assertions;
 
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public enum State
     {

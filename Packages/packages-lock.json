@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.nanoo.behaviortree": {
+      "version": "file:com.nanoo.behaviortree",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.7",
       "depth": 0,

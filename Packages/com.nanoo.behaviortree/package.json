@@ -1,0 +1,16 @@
+{
+  "name": "com.nanoo.behaviortree",
+  "version": "1.0.0",
+  "displayName": "Behavior Tree",
+  "description": "A flexible Behavior Tree implementation for Unity, designed to help you create complex AI behaviors with minimal effort.",
+  "unity": "2019.1",
+  "documentationUrl": "https://github.com/zlimez/C-Behavior-Tree/tree/master#readme",
+  "keywords": [
+    "ai",
+    "behavior tree"
+  ],
+  "author": {
+    "name": "nanoo",
+    "email": "nisemono49731@gmail.com"
+  }
+}

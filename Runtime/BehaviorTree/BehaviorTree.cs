@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Utils;
 
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class BehaviorTree
     {

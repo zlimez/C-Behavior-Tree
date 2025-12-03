@@ -1,10 +1,10 @@
-// Root must have at least one child
 using UnityEngine.Assertions;
 
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class Root : Node
     {
+        // Root must have one child
         public Node Child { get; }
         private readonly Node[] _children;
 

@@ -1,7 +1,6 @@
 using UnityEngine.Assertions;
 
-
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class ActiveSelector : Selector
     {

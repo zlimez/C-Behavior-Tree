@@ -1,4 +1,4 @@
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class Successor : Decorator
     {

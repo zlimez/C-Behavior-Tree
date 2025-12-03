@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BehaviorTree
+namespace AI.BehaviorTree
 {
     public class ProbSelector : Selector
     {

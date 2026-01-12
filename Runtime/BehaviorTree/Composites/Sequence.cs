@@ -17,11 +17,7 @@ namespace AI.BehaviorTree
 
             if (childState == State.Success)
             {
-                if (CurrChildInd + 1 < Children.Length)
-                {
-                    Tree.Scheduled.AddFirst(Children[++CurrChildInd]);
-                    return;
-                }
+                if (CurrChildInd + 1 < Children.Length) Tree.Scheduled.AddFirst(Children[++CurrChildInd]);
                 else State = State.Success;
             }
         }
@@ -31,12 +27,6 @@ namespace AI.BehaviorTree
             CurrChildInd = 0;
             Tree.Scheduled.AddFirst(Children[CurrChildInd]);
             base.OnInit();
-        }
-
-        public override void Abort()
-        {
-            base.Abort();
-            Children[CurrChildInd].Abort();
         }
     }
 }

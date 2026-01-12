@@ -11,12 +11,13 @@ namespace AI.BehaviorTree
         Suspended
     }
 
+    public interface IRestartable { public bool ShouldRestart(); }
+
     public abstract class Node
     {
 #if UNITY_EDITOR
         public int Id;
 #endif
-
         public State State { get; protected set; } = State.Inactive;
         protected BehaviorTree Tree;
         public Node Parent;
@@ -43,6 +44,7 @@ namespace AI.BehaviorTree
         }
 
         public bool Completed => State is State.Success or State.Failure;
+        public void Reset() => State = State.Inactive;
         public virtual void OnChildComplete(Node child, State childState) => child.Done();
         public abstract Node[] GetChildren();
     }

@@ -114,7 +114,7 @@ namespace Utils
 
             _tail = (_tail - 1 + _buffer.Length) % _buffer.Length;
 
-            T item = _buffer[_tail];
+            var item = _buffer[_tail];
 
             _buffer[_tail] = default;
 
@@ -126,13 +126,7 @@ namespace Utils
             return item;
         }
 
-        public T PeekFirst()
-        {
-            if (Count == 0)
-                throw new InvalidOperationException("Deque is empty.");
-
-            return _buffer[_head];
-        }
+        public T PeekFirst() => Count == 0 ? throw new InvalidOperationException("Deque is empty.") : _buffer[_head];
 
         public T PeekLast()
         {
@@ -144,12 +138,94 @@ namespace Utils
         }
 
 
-        public IEnumerator<T> GetEnumerator()
+        public Enumerator GetEnumerator() =>  new(this);
+
+        // Explicit interface implementations are required for compatibility,
+        // but these will Box the struct (allocate) if cast to IEnumerable.
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public struct Enumerator : IEnumerator<T>
         {
-            for (var i = 0; i < Count; i++)
-                yield return _buffer[GetIndex(i)];
+            private readonly Deque<T> _deque;
+            private int _index;
+
+            internal Enumerator(Deque<T> deque)
+            {
+                _deque = deque;
+                _index = -1;
+                Current = default;
+            }
+
+            public bool MoveNext()
+            {
+                if (_index + 1 < _deque.Count)
+                {
+                    _index++;
+                    Current = _deque._buffer[_deque.GetIndex(_index)];
+                    return true;
+                }
+
+                _index = _deque.Count;
+                Current = default;
+                return false;
+            }
+
+            public T Current { get; private set; }
+            object IEnumerator.Current => Current;
+            public void Dispose() { }
+
+            public void Reset()
+            {
+                _index = -1;
+                Current = default;
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public ReverseEnumerable Reverse => new(this);
+
+        public readonly struct ReverseEnumerable
+        {
+            private readonly Deque<T> _deque;
+            public ReverseEnumerable(Deque<T> deque) => _deque = deque;
+            public ReverseEnumerator GetEnumerator() => new(_deque);
+        }
+
+        public struct ReverseEnumerator : IEnumerator<T>
+        {
+            private readonly Deque<T> _deque;
+            private int _index;
+
+            internal ReverseEnumerator(Deque<T> deque)
+            {
+                _deque = deque;
+                _index = deque.Count;
+                Current = default;
+            }
+
+            public bool MoveNext()
+            {
+                if (_index > 0)
+                {
+                    _index--;
+                    Current = _deque._buffer[_deque.GetIndex(_index)];
+                    return true;
+                }
+
+                _index = -1;
+                Current = default;
+                return false;
+            }
+
+            public T Current { get; private set; }
+            object IEnumerator.Current => Current;
+            public void Dispose() { }
+
+            public void Reset()
+            {
+                _index = _deque.Count;
+                Current = default;
+            }
+        }
     }
 }

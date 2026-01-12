@@ -28,11 +28,5 @@ namespace AI.BehaviorTree
             Tree.Scheduled.AddFirst(Children[CurrChildInd]);
             base.OnInit();
         }
-
-        public override void Abort()
-        {
-            base.Abort();
-            Children[CurrChildInd].Abort();
-        }
     }
 }

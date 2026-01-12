@@ -53,7 +53,7 @@ namespace AI.BehaviorTree
             foreach (var (varName, changeEvent) in _trackedVars)
             {
                 var sourceFound = false;
-                foreach (var observedStore in _observedStores)
+                foreach (var observedStore in _observedStores!)
                 {
                     if (!observedStore.Has(varName)) continue;
                     sourceFound = true;
@@ -106,10 +106,8 @@ namespace AI.BehaviorTree
 
         public State Tick(float deltaTime)
         {
-            foreach (var e in _eventFrontBuffer) e.Invoke();
-            _eventFrontBuffer.Clear();
-            (_eventFrontBuffer, _eventBackBuffer) = (_eventBackBuffer, _eventFrontBuffer);
-            _eventWriteBuffer = _eventBackBuffer;
+            PropagateEvents();
+            HandleNodeRestarts();
 
             if (Scheduled.Count == 0) Scheduled.AddFirst(_root);
             Scheduled.AddLast(null); // End of turn marker, the last element should be root
@@ -121,8 +119,29 @@ namespace AI.BehaviorTree
             return execState;
         }
 
-        // TODO: For observed var change that causes reevaluation and potentially aborts starting from parent will be more efficient
-        // from children many alt routes in children subtree may be taken only for parent to restart and abort the alt path
+        private void PropagateEvents()
+        {
+            foreach (var e in _eventFrontBuffer) e.Invoke();
+            _eventFrontBuffer.Clear();
+            (_eventFrontBuffer, _eventBackBuffer) = (_eventBackBuffer, _eventFrontBuffer);
+            _eventWriteBuffer = _eventBackBuffer;
+        }
+
+        // Check for node that wants to restart nearest to root abort children in path and restart from there
+        private void HandleNodeRestarts()
+        {
+            var startAbort = false;
+            foreach (var node in Scheduled.Reverse)
+            {
+                if (startAbort) node.Abort();
+                else if (node is IRestartable restartable && restartable.ShouldRestart())
+                {
+                    startAbort = true;
+                    node.Reset();
+                }
+            }
+        }
+
         private bool Step(float deltaTime)
         {
             var node = Scheduled.PeekFirst();
@@ -131,13 +150,10 @@ namespace AI.BehaviorTree
             var ogState = node.State;
             var state = node.Tick(deltaTime);
             // Non-leaf control nodes with children first traversed, child node pushed to Scheduled, do not pop this node until children evaluated (Action node always popped)
-            // Active controls nodes that require condition recheck every turn do not pop until recheck is done (Reevaluated toggles back to false)
-            if (node is ActiveSelector { Restarted: true } or ActiveSequence { Restarted: true }
-                or ObserveSelector { WillRestart: true } or ObserveSequence { WillRestart: true }) return true;
             if (ogState == State.Inactive) return true;
 
             Scheduled.RemoveFirst();
-            // INVARIANT: End of each turn, only running / aborted nodes by parent are in Scheduled + at most one action node in Running state
+            // INVARIANT: End of each turn, only running nodes by parent are in Scheduled + at most one action node in Running state
             if (state == State.Running) Scheduled.AddLast(node);
             else if (node.Completed) node.Parent?.OnChildComplete(node, state);
 

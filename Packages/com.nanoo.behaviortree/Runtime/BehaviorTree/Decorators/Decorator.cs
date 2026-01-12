@@ -18,12 +18,6 @@ namespace AI.BehaviorTree
             base.OnInit();
         }
 
-        public override void Abort()
-        {
-            base.Abort();
-            Child.Abort();
-        }
-
         public override Node[] GetChildren() => _children;
     }
 }

@@ -5,7 +5,7 @@ namespace AI.BehaviorTree
     public class Root : Node
     {
         // Root must have one child
-        public Node Child { get; }
+        private readonly Node _child;
         private readonly Node[] _children;
 
         public Root(Node child)
@@ -14,9 +14,9 @@ namespace AI.BehaviorTree
             Assert.IsNull(Parent);
             Assert.IsNotNull(child);
 #endif
-            Child = child;
-            Child.Parent = this;
-            _children = new Node[1] { Child };
+            _child = child;
+            _child.Parent = this;
+            _children = new[] { _child };
         }
 
         public override void OnChildComplete(Node child, State childState)
@@ -27,7 +27,7 @@ namespace AI.BehaviorTree
 
         protected override void OnInit()
         {
-            Tree.Scheduled.AddFirst(Child);
+            Tree.Scheduled.AddFirst(_child);
             base.OnInit();
         }
 
